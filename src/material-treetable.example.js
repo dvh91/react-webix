@@ -235,9 +235,6 @@ function TreeTableExample({ dense = false }) {
         <button onClick={handleColumnChange}>update columns</button>
         <button onClick={() => setLeftSplit(2)}>update left split</button>
         <button onClick={() => setRightSplit(1)}>update right split</button>
-        <button onClick={() => setTopSplit(2)}>update top split</button>
-        <button onClick={() => setYCount(10)}>update yCount (10)</button>
-        <button onClick={() => setYCount(80)}>update yCount (80)</button>
       </div>
 
       <MaterialWebix dense={dense} config={config} onReady={(ref) => tableRef.current = ref} />
