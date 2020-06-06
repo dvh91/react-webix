@@ -113,7 +113,13 @@ export const renderStatefulCell = (
   config
 ) => {
   const id = "react_cell_" + webix.uid();
-  const staticMarkup = ReactDOMServer.renderToStaticMarkup(<div id={id} />);
+  const staticMarkup = ReactDOMServer.renderToStaticMarkup(<div id={id}><CellComponent
+    tableRef={tableRef.current}
+    row={row}
+    common={common}
+    value={value}
+    config={config}
+  /></div>);
 
   setTimeout(() => {
     const container = document.getElementById(id);
