@@ -6,7 +6,8 @@ import {
 } from "./react-webix";
 import generateData from "./utils";
 import React, { useCallback, useState, useRef } from "react";
-import { MenuItem, IconButton, Menu, Checkbox } from "@material-ui/core";
+import { MenuItem, IconButton, Menu, Checkbox, Box } from "@material-ui/core";
+import Pagination from '@material-ui/lab/Pagination';
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 function TableTooltip(props) {
@@ -85,7 +86,9 @@ function TableCheckboxCell(props) {
 
 function TreeTableExample({ dense = false }) {
   const tableRef = useRef();
-  const [data, setData] = useState(generateData(50));
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState();
+  const [data, setData] = useState(generateData(40));
   const [leftSplit, setLeftSplit] = useState(0);
   const [rightSplit, setRightSplit] = useState(0);
   const [topSplit, setTopSplit] = useState(0);
@@ -129,7 +132,7 @@ function TreeTableExample({ dense = false }) {
       css: { "text-align": "right" },
       template: renderStatefulCell.bind(this, TableRowActionsCell, tableRef),
       tooltip: false,
-      minWidth: 100
+      width: 64,
     }
   ]);
 
@@ -210,7 +213,16 @@ function TreeTableExample({ dense = false }) {
       deleteButton: onDeleteButtonClick
     },
     on: {
-      onItemClick
+      onItemClick,
+      onAfterLoad: function () { console.log(this.getPager(), 'data changed'); setPageCount(this.getPager().data.$max + 1) }
+    },
+    pager: {
+      size: 25,
+      group: 100,
+      apiOnly: true,
+      on: {
+        onAfterPageChange: function (page) { setPage(Number(page) + 1) }
+      }
     }
   };
 
@@ -229,6 +241,13 @@ function TreeTableExample({ dense = false }) {
       </div>
 
       <MaterialWebix dense={dense} config={config} onReady={(ref) => tableRef.current = ref} />
+      {
+        pageCount && (
+          <Box display="flex" flexDirection="row-reverse" my={2}>
+            <Pagination color="secondary" showFirstButton showLastButton count={pageCount} page={page} onChange={(event, page) => tableRef.current.setPage(page - 1)} />
+          </Box>
+        )
+      }
     </div>
   );
 }
