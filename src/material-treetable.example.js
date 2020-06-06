@@ -217,6 +217,8 @@ function TreeTableExample({ dense = false }) {
   return (
     <div>
       <div className="toolbar">
+        <button onClick={() => tableRef.current.checkAll()}>check all</button>
+        <button onClick={() => tableRef.current.uncheckAll()}>uncheck all</button>
         <button onClick={() => setData(generateData())}>update data</button>
         <button onClick={handleColumnChange}>update columns</button>
         <button onClick={() => setLeftSplit(2)}>update left split</button>
