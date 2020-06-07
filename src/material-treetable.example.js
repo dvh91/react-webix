@@ -149,6 +149,11 @@ function TreeTableExample({ dense = false }) {
     if (pageCount !== next) setPageCount(next)
   }, []);
 
+  const onAfterDelete = useCallback(function () {
+    const next = this.getPager().data.$max + 1;
+    if (pageCount !== next) setPageCount(next)
+  }, []);
+
   const onBeforePageChange = useCallback(function (page) {
     setPage(Number(page) + 1)
   }, []);
@@ -165,6 +170,11 @@ function TreeTableExample({ dense = false }) {
     });
     const item = this.getItem(rowId);
     item.open ? this.close(rowId) : this.open(rowId);
+  }, []);
+
+  const handleDeleteChecked = useCallback(() => {
+    const checked = tableRef.current.getChecked();
+    tableRef.current.remove(checked);
   }, []);
 
   const handleColumnChange = () => {
@@ -228,6 +238,7 @@ function TreeTableExample({ dense = false }) {
     on: {
       onItemClick,
       onAfterLoad,
+      onAfterDelete
     },
     pager: {
       size: 15,
@@ -242,6 +253,7 @@ function TreeTableExample({ dense = false }) {
   return (
     <div>
       <div className="toolbar">
+        <button onClick={handleDeleteChecked}>delete checked</button>
         <button onClick={() => tableRef.current.checkAll()}>check all</button>
         <button onClick={() => tableRef.current.uncheckAll()}>uncheck all</button>
         <button onClick={() => setData(generateData())}>update data</button>
