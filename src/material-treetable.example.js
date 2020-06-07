@@ -14,8 +14,6 @@ function TableTooltip(props) {
   const { column, row } = props;
   return (
     <div>
-      {column.header[0].text}
-      <br />
       {row[column.id]}
       <span>⚛</span>
     </div>
@@ -48,6 +46,11 @@ function TableRowActionsCell(props) {
     handleClose();
   }
 
+  const handleSelectRow = () => {
+    tableRef.checkItem(row.id);
+    handleClose();
+  }
+
   return (
     <div>
       <IconButton size="small" onClick={handleClick}>
@@ -55,6 +58,7 @@ function TableRowActionsCell(props) {
       </IconButton>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         <MenuItem onClick={handleDeleteRow}>Delete {row.name}</MenuItem>
+        <MenuItem onClick={handleSelectRow}>Select {row.name}</MenuItem>
       </Menu>
     </div>
   );
@@ -79,6 +83,8 @@ function TableCheckboxCell(props) {
     else {
       tableRef.uncheckItem(row.id)
     }
+
+    tableRef.callEvent("onCheck", [row.id, null, value]);
   }
 
   return <Checkbox checked={row.checked} onChange={handleChange} size="small" />;
@@ -96,9 +102,7 @@ function TreeTableExample({ dense = false }) {
   const [columns, setColumns] = useState([
     {
       id: 'checkbox',
-      header: {
-        text: ''
-      },
+      header: { text: '' },
       template: renderStatefulCell.bind(this, TableCheckboxCell, tableRef),
       width: 64,
       tooltip: false
@@ -138,6 +142,15 @@ function TreeTableExample({ dense = false }) {
 
   const onItemClick = useCallback(function ({ row: rowId }) {
     console.log("onItemClick");
+  }, []);
+
+  const onAfterLoad = useCallback(function () {
+    const next = this.getPager().data.$max + 1;
+    if (pageCount !== next) setPageCount(next)
+  }, []);
+
+  const onBeforePageChange = useCallback(function (page) {
+    setPage(Number(page) + 1)
   }, []);
 
   const onDeleteButtonClick = useCallback(function () {
@@ -214,14 +227,14 @@ function TreeTableExample({ dense = false }) {
     },
     on: {
       onItemClick,
-      onAfterLoad: function () { console.log(this.getPager(), 'data changed'); setPageCount(this.getPager().data.$max + 1) }
+      onAfterLoad,
     },
     pager: {
-      size: 25,
+      size: 15,
       group: 100,
       apiOnly: true,
       on: {
-        onAfterPageChange: function (page) { setPage(Number(page) + 1) }
+        onBeforePageChange
       }
     }
   };
